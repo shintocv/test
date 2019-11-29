@@ -1,0 +1,56 @@
+pipeline structure:
+    action, properties, definition
+
+values to be configured
+-----------------------
+
+triggers:
+      <triggers>
+        <org.jenkinsci.plugins.ghprb.GhprbTrigger plugin="ghprb@1.42.0">
+          <spec></spec>
+          <configVersion>3</configVersion>
+          <adminlist></adminlist>
+          <allowMembersOfWhitelistedOrgsAsAdmin>false</allowMembersOfWhitelistedOrgsAsAdmin>
+          <onlyTriggerPhrase>false</onlyTriggerPhrase>
+          <useGitHubHooks>true</useGitHubHooks>
+          <permitAll>true</permitAll>
+          <whiteListTargetBranches>
+            <org.jenkinsci.plugins.ghprb.GhprbBranch>
+              <branch>^(.*develop|.*master)$</branch>
+            </org.jenkinsci.plugins.ghprb.GhprbBranch>
+          </whiteListTargetBranches>
+          <gitHubAuthId>2f903659-3882-4a04-8cd7-5eac70f7c640</gitHubAuthId>
+          <triggerPhrase>.*run tests.*</triggerPhrase>
+          <skipBuildPhrase>.*\[skip\W+ci\].*</skipBuildPhrase>
+        </org.jenkinsci.plugins.ghprb.GhprbTrigger>
+      </triggers>
+
+github projectUrl:
+    <com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@1.29.1">
+      <projectUrl>https://github.com/shintocv/test/</projectUrl>
+      <displayName></displayName>
+    </com.coravy.hudson.plugins.github.GithubProjectProperty>
+
+definition:
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition" plugin="workflow-cps@2.71">
+    <scm class="hudson.plugins.git.GitSCM" plugin="git@3.9.1">
+      <configVersion>2</configVersion>
+      <userRemoteConfigs>
+        <hudson.plugins.git.UserRemoteConfig>
+          <name>origin</name>
+          <refspec>+refs/heads/*:refs/remotes/origin/* +refs/pull/${ghprbPullId}/*:refs/remotes/origin/pr/${ghprbPullId}/*</refspec>
+          <url>https://github.com/shintocv/test.git</url>
+        </hudson.plugins.git.UserRemoteConfig>
+      </userRemoteConfigs>
+      <branches>
+        <hudson.plugins.git.BranchSpec>
+          <name>${ghprbActualCommit}</name>
+        </hudson.plugins.git.BranchSpec>
+      </branches>
+      <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+      <submoduleCfg class="list"/>
+      <extensions/>
+    </scm>
+    <scriptPath>.infra/Jenkinsfile</scriptPath>
+    <lightweight>false</lightweight>
+  </definition>

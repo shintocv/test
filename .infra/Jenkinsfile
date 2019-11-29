@@ -2,8 +2,28 @@ pipeline {
     agent any
     stages {
         stage('build') {
+            when {
+				anyOf {
+					expression { "${RELEASE_ENVIRONMENT}" == 'Refresh' }
+					expression { "${RELEASE_ENVIRONMENT}" == 'Build' }
+					expression { "${RELEASE_ENVIRONMENT}" == 'QA'}
+					expression { "${ghprbActualCommit}" != ''}
+				}
+			}
             steps {
-                sh 'date'
+                // echo "ghprbActualCommit: ${ghprbActualCommit}"
+                echo 'building the app...'
+            }
+        }
+
+      	stage('Deploy On Stage'){
+            when {
+				anyOf {
+					expression { "${RELEASE_ENVIRONMENT}" == 'Stage' }
+				}
+			}
+            steps {
+                echo 'Deploying in stage...'
             }
         }
     }
