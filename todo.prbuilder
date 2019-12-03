@@ -1,3 +1,4 @@
+Need to build kubestrap before running the onboarding pipelien
 pipeline structure:
     action, properties, definition
 
